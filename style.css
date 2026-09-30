@@ -1,0 +1,55 @@
+/* Pure ChatGPT Clean Style + Smart Medication Companion */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Alexandria:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-chatgpt: #212121;
+    --surface-bubble: #2f2f2f;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    --text-primary: #ececec;
+    --text-muted: #b4b4b4;
+    --accent-emerald: #10b981;
+}
+
+html[dir="rtl"] { font-family: 'Alexandria', sans-serif; }
+html[dir="ltr"] { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+body {
+    background-color: var(--bg-chatgpt);
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #424242; border-radius: 999px; }
+
+/* ChatGPT Prompt Cards */
+.chatgpt-card {
+    background: #212121;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.15s ease;
+}
+
+.chatgpt-card:hover {
+    background: #2f2f2f;
+    border-color: var(--border-hover);
+}
+
+/* Drawer / Modal Transition */
+.drawer-backdrop {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    transition: opacity 0.2s ease;
+}
+
+.anim-fade {
+    animation: fadeIn 0.15s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+}

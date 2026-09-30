@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ABDO CARE — رعاية صحتك ومواعيد أدويتك</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Alexandria (Arabic) + Plus Jakarta Sans (English) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden bg-[#212121] text-[#ececec]">
+
+    <!-- ===== TOP CLEAN HUMAN HEADER ===== -->
+    <header class="h-13 border-b border-white/[0.06] flex items-center justify-between px-4 sm:px-6 bg-[#212121] shrink-0 z-20">
+        <!-- Pure Clean Brand Name -->
+        <div class="flex items-center">
+            <span id="brandNameDisplay" class="text-sm font-bold text-white tracking-wide font-sans">ABDO CARE</span>
+        </div>
+
+        <!-- Right Controls: My Meds Drawer + Language + New Consultation -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            
+            <!-- My Medications Cabinet Button -->
+            <button onclick="toggleMedsDrawer()" class="px-3 py-1.5 rounded-full bg-[#2f2f2f] hover:bg-[#383838] border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <i data-lucide="pill" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span data-i18n="my_meds_btn">جدول أدويتي</span>
+                <span id="medsCountBadge" class="px-1.5 py-0.2 rounded-full bg-white/10 text-[10px] font-mono">3</span>
+            </button>
+
+            <!-- Language Switcher -->
+            <div class="flex p-0.5 bg-[#2f2f2f] rounded-lg border border-white/10 text-[11px] font-mono font-bold">
+                <button onclick="setLang('ar')" id="btnLangAr" class="px-2 py-0.5 rounded bg-white text-black font-semibold">AR</button>
+                <button onclick="setLang('en')" id="btnLangEn" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">EN</button>
+            </div>
+            
+            <!-- New Consultation -->
+            <button onclick="startNewChat()" title="استشارة جديدة" class="w-8 h-8 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white flex items-center justify-center transition-all">
+                <i data-lucide="square-pen" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CANVAS ===== -->
+    <main id="chatMessages" class="flex-1 overflow-y-auto px-4 sm:px-6 py-8 space-y-6 max-w-3xl mx-auto w-full">
+        
+        <!-- Clean Empty State -->
+        <div id="emptyState" class="h-full flex flex-col items-center justify-center space-y-8 my-auto py-8">
+            
+            <!-- Heading -->
+            <div class="text-center space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight" data-i18n="empty_title">
+                    ABDO CARE — رعاية صحتك ومواعيد أدويتك
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed" data-i18n="empty_sub">
+                    ارفع صورة الروشتة لتسجيل الأدوية وجدولة مواعيدها في منبهك، أو اسأل عن أي دواء وجرعاته.
+                </p>
+            </div>
+
+            <!-- 4 Action Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
+                
+                <!-- Card 1 -->
+                <div onclick="sendQuickPrompt('rx_general')" class="chatgpt-card p-3.5 rounded-2xl cursor-pointer flex items-center justify-between gap-3">
+                    <div class="space-y-0.5">
+                        <div class="font-semibold text-xs text-white" data-i18n="chip_rx_title">قراءة الروشتة وجدولة الجرعات</div>
+                        <div class="text-[11px] text-slate-400" data-i18n="chip_rx_sub">توضيح الأدوية وحفظها في جدول مواعيدك</div>
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
+                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div onclick="toggleMedsDrawer()" class="chatgpt-card p-3.5 rounded-2xl cursor-pointer flex items-center justify-between gap-3">
+                    <div class="space-y-0.5">
+                        <div class="font-semibold text-xs text-white" data-i18n="chip_cabinet_title">جدول مواعيدي اليومية والمنبه</div>
+                        <div class="text-[11px] text-slate-400" data-i18n="chip_cabinet_sub">عرض الجرعات المتبقية اليوم وتأكيد أخذها</div>
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 shrink-0">
+                        <i data-lucide="clock" class="w-4 h-4"></i>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div onclick="sendQuickPrompt('lab_cbc')" class="chatgpt-card p-3.5 rounded-2xl cursor-pointer flex items-center justify-between gap-3">
+                    <div class="space-y-0.5">
+                        <div class="font-semibold text-xs text-white" data-i18n="chip_cbc_title">تفسير تحليل صورة دم CBC</div>
+                        <div class="text-[11px] text-slate-400" data-i18n="chip_cbc_sub">فحص نسبة الهيموجلوبين والأنيميا والمناعة</div>
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 shrink-0">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div onclick="sendQuickPrompt('lab_lipid')" class="chatgpt-card p-3.5 rounded-2xl cursor-pointer flex items-center justify-between gap-3">
+                    <div class="space-y-0.5">
+                        <div class="font-semibold text-xs text-white" data-i18n="chip_safety_title">الأمان الدوائي وبدائل الأدوية</div>
+                        <div class="text-[11px] text-slate-400" data-i18n="chip_safety_sub">التأكد من أمان الأدوية معاً وتجنب الآثار الجانبية</div>
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Dynamic Messages Render Here -->
+    </main>
+
+    <!-- ===== 🔔 LIVE RINGING ALARM POPUP MODAL (TOP-MOST LAYER) ===== -->
+    <div id="liveAlarmModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/85 backdrop-blur-md"></div>
+
+        <!-- Ringing Capsule -->
+        <div class="relative w-full max-w-md bg-[#252525] border border-emerald-500/50 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl z-10 anim-fade">
+            
+            <!-- Pulsing Alarm Bell Icon -->
+            <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+                <span class="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></span>
+                <div class="w-16 h-16 rounded-full bg-emerald-500 text-black flex items-center justify-center shadow-lg">
+                    <i data-lucide="bell-ring" class="w-8 h-8 animate-bounce"></i>
+                </div>
+            </div>
+
+            <!-- Alarm Information -->
+            <div class="space-y-1.5">
+                <span id="alarmBadgeLabel" class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold" data-i18n="alarm_badge">
+                    حـان مـوعـد الـجـرعـة الآن 🔔
+                </span>
+                <h3 id="alarmMedName" class="text-xl sm:text-2xl font-extrabold text-white mt-2 font-sans">
+                    Augmentin 1g
+                </h3>
+                <p id="alarmMedDetails" class="text-xs text-slate-300 leading-relaxed font-sans">
+                    قرص واحد بعد الأكل مع كوب ماء كامل
+                </p>
+            </div>
+
+            <!-- Primary Action: Stop Alarm & Confirm Dose Taken (No Snooze) -->
+            <div class="pt-2">
+                <button onclick="confirmDoseTakenAndStopAlarm()" class="w-full py-4 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl transition-all hover:scale-[1.02]">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    <span id="alarmBtnText" data-i18n="alarm_stop_btn">أخذت الدواء (إيقاف المنبه)</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== 💊 SMART MEDICATION CABINET DRAWER (MODAL) ===== -->
+    <div id="medsDrawer" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div onclick="toggleMedsDrawer()" class="fixed inset-0 drawer-backdrop"></div>
+
+        <!-- Modal Container -->
+        <div class="relative w-full max-w-lg bg-[#212121] border border-white/10 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 text-xs sm:text-sm z-10 anim-fade max-h-[90vh] flex flex-col">
+            
+            <!-- Drawer Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <i data-lucide="pill" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-sm" data-i18n="cabinet_title">جدول أدويتي ومنبه الجرعات</h3>
+                        <p class="text-[11px] text-slate-400" data-i18n="cabinet_sub">مواعيد أدويتك اليومية والتنبيهات المجدولة</p>
+                    </div>
+                </div>
+                <button onclick="toggleMedsDrawer()" class="w-7 h-7 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center">✕</button>
+            </div>
+
+            <!-- Medication List -->
+            <div id="medicationListContainer" class="flex-1 overflow-y-auto space-y-2.5 py-1 pr-1">
+                <!-- Dynamic Meds Render -->
+            </div>
+
+            <!-- Modal Footer with Test Alarm Trigger -->
+            <div class="pt-3 border-t border-white/10 flex items-center justify-between shrink-0">
+                <button onclick="testAlarmNow()" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all">
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5 animate-pulse"></i>
+                    <span id="testAlarmBtnLabel" data-i18n="test_alarm_btn">تجربة رنين المنبه الآن 🔔</span>
+                </button>
+                
+                <button onclick="toggleMedsDrawer()" class="px-4 py-2 rounded-xl bg-white text-black font-bold text-xs hover:bg-slate-200 transition-all">
+                    <span data-i18n="close_btn">إغلاق</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== BOTTOM INPUT CAPSULE ===== -->
+    <footer class="p-4 sm:p-6 bg-gradient-to-t from-[#212121] via-[#212121] to-transparent shrink-0">
+        <div class="max-w-3xl mx-auto w-full space-y-2">
+            
+            <!-- Attachment Preview Chip -->
+            <div id="attachmentPreview" class="hidden p-1.5 px-3 bg-[#2f2f2f] border border-white/10 rounded-xl inline-flex items-center gap-2 text-xs text-slate-300">
+                <img id="attachedThumb" src="" alt="Preview" class="w-6 h-6 rounded object-cover" />
+                <span id="attachedFileName" class="truncate max-w-[200px]">prescription.jpg</span>
+                <button onclick="removeAttachment()" class="text-slate-400 hover:text-white p-0.5">✕</button>
+            </div>
+
+            <!-- Floating Input Pill Bar -->
+            <div class="bg-[#2f2f2f] border border-white/10 focus-within:border-emerald-500/40 rounded-3xl p-1.5 sm:p-2 flex items-center gap-2 transition-all shadow-lg">
+                
+                <!-- Attachment Button 📎 -->
+                <input id="fileUploadInput" type="file" accept="image/*,.pdf" class="hidden" onchange="handleFileSelect(event)" />
+                <button onclick="document.getElementById('fileUploadInput').click()" title="إرفاق صورة روشتة أو تحليل" class="w-8 h-8 rounded-full hover:bg-white/10 text-slate-400 hover:text-emerald-400 flex items-center justify-center transition-colors shrink-0">
+                    <i data-lucide="paperclip" class="w-4 h-4"></i>
+                </button>
+
+                <!-- Input Textarea -->
+                <input id="userInput" type="text"
+                    placeholder="اكتب استفسارك الدوائي أو اطلب تنبيهك بميعاد دواء..." 
+                    onkeypress="if(event.key==='Enter') sendMessage()"
+                    class="flex-1 bg-transparent border-0 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-0 px-2" />
+
+                <!-- Send Button -->
+                <button id="sendBtn" onclick="sendMessage()" class="w-8 h-8 rounded-full bg-white hover:bg-slate-200 text-black flex items-center justify-center transition-colors shrink-0 shadow-md">
+                    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Human Care Disclaimer -->
+            <p class="text-[11px] text-center text-slate-500" data-i18n="disclaimer">
+                خدمة استرشادية لتنظيم الأدوية والمواعيد • يرجى دائماً مراجعة الطبيب المعالج أو الصيدلي.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Engine -->
+    <script src="app.js"></script>
+</body>
+</html>

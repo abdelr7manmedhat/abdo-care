@@ -1,0 +1,58 @@
+{
+  "name": "AgencyCloser AI - Lead Auditor Flow",
+  "description": "Autonomous Marketing Agency Lead Auditor and Deal Closer",
+  "nodes": [
+    {
+      "id": "node_chat_model_1",
+      "type": "chatGoogleGenerativeAI",
+      "label": "Gemini 2.0 Flash / Pro",
+      "inputs": {
+        "modelName": "gemini-2.0-flash",
+        "temperature": 0.2,
+        "maxOutputTokens": 4096
+      }
+    },
+    {
+      "id": "node_system_prompt_1",
+      "type": "promptTemplate",
+      "label": "ApexAuditor Prompt Manifest",
+      "inputs": {
+        "template": "You are 'ApexAuditor', an elite Chief Marketing Technologist and CRO strategist. Ingest the prospect website data and diagnose the TOP 3 severe marketing and conversion bottlenecks causing revenue leakage.\n\nInput URL: {target_url}\nBusiness Niche: {business_niche}\n\nStrict Rules:\n1. Zero Hallucination: Rely only on verifiable data.\n2. Tie every flaw to business revenue and CAC.\n3. Output:\n- 1-Page Executive Audit Scorecard\n- Personalized Value-First Cold Email (120-150 words)\n- 60-Second Video Walkthrough Script",
+        "inputVariables": ["target_url", "business_niche"]
+      }
+    },
+    {
+      "id": "node_web_tool_1",
+      "type": "customTool",
+      "label": "Web & Pixel Scanner Tool",
+      "inputs": {
+        "name": "website_scanner",
+        "description": "Scans prospect website for tracking pixels (Meta, Google, TikTok), mobile load speed, and CTA presence."
+      }
+    },
+    {
+      "id": "node_agent_orchestrator_1",
+      "type": "openAIAgent",
+      "label": "AgencyCloser Core Agent",
+      "inputs": {
+        "model": "node_chat_model_1",
+        "tools": ["node_web_tool_1"],
+        "prompt": "node_system_prompt_1"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_chat_model_1",
+      "target": "node_agent_orchestrator_1"
+    },
+    {
+      "source": "node_web_tool_1",
+      "target": "node_agent_orchestrator_1"
+    },
+    {
+      "source": "node_system_prompt_1",
+      "target": "node_agent_orchestrator_1"
+    }
+  ]
+}
